@@ -3,6 +3,7 @@
 #include "vector.hpp"
 #include <string>
 #include <vector>
+#include <iterator>
 #include <iostream>
 
 // template<class Iter>
@@ -14,7 +15,7 @@
 
 // };
 
-using namespace std;
+using namespace ft;
 
  
 void print_container(vector<std::string>& vec) 
@@ -27,13 +28,24 @@ void print_container(vector<std::string>& vec)
 int main()
 {
     //std::cout << "hello"<< std::endl;
-    std::string arr[] = {"hello", "hello1", "hello2", "hello3", "hello4", "hello5", "hello6"};
+    std::string arr[] = {"hello", "hello1", "hello2", "hello3", "hello4", "hello5", "hello6" , "mama" , "baba"};
     //std::cout << a.size() << std::endl;
-    vector<std::string> vec (arr, arr + 6);
+    vector<std::string> vec;
     print_container(vec);
-    vector<std::string>::iterator a = vec.erase(vec.begin() + 4, vec.begin() + 7);
-    std::cout << *a << std::endl;
+    //vec.resize(5,"hello");
+    // print_container(vec);
+    //std::cout << vec.capacity() << std::endl;
+    //vec.resize(15,"world");
+    //print_container(vec);
+    std::cout << vec.capacity() << std::endl;
+    vec.insert(vec.end(), arr + 7 , arr + 9);
+    vector<std::string>::const_iterator i = vec.begin();
+    
+    std::cout << *i << std::endl;
     print_container(vec);
+    std::cout << vec.capacity() << std::endl;
+    //vec.erase(vec.begin() + 2 , vec.end());
+    //std::cout << vec.capacity() << std::endl;
 
     // i =  1 + i;
     // std::cout << *i << std::endl;
