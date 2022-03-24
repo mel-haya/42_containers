@@ -1,6 +1,5 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
-#include <iostream>
 #include "iterator_traits.hpp"
 #include "utils.hpp"
 #include <stdexcept>
@@ -20,8 +19,8 @@ namespace ft{
         	typedef    vectorIter<const T>                        const_iterator;
   		public:
         	typedef iterator_traits< iterator<std::random_access_iterator_tag, T> > iterator_traits;
-			typedef T															iterator_type;
-			typedef typename iterator_traits::value_type			value_type;
+			typedef T											iterator_type;
+			typedef typename iterator_traits::value_type		value_type;
 			typedef typename iterator_traits::reference			reference;
 			typedef typename iterator_traits::pointer			pointer;
 			typedef typename iterator_traits::difference_type	difference_type;
@@ -221,24 +220,19 @@ namespace ft{
 			_capacity = 0;
 		}
 
-		vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()): _Allocator(alloc){
-				_size = n;
-				_capacity = n;
-				_Data	= _Allocator.allocate(n);
-				for (size_type i = 0; i < _size; i++)
-					_Allocator.construct(&_Data[i], val);
+		vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type())
+		:_Allocator(alloc) ,  _Data(0) , _size(0), _capacity(0)
+		{
+			assign(n,val);
 		}
-
 		template <class Iter>
 		vector (Iter first, Iter last, const allocator_type& alloc = allocator_type(),
 		typename ft::enable_if<!ft::is_integral<Iter>::value, Iter>::type* = NULL)
-		:_Allocator(alloc) , _capacity(0)
+		:_Allocator(alloc) , _Data(0) , _capacity(0)
 		{
-			_Data = nullptr;
 			assign(first,last);
 		}
-
-		vector (const vector& x) {*this = x;}
+		vector (const vector& x): _Allocator(allocator_type()), _Data(0), _size(0), _capacity(0) {*this = x;}
 		~vector()
 		{
 			clear();
@@ -247,8 +241,8 @@ namespace ft{
 
 		vector& operator=(const vector& c)
 		{
-			clear();
-			insert(begin(),c.begin(),c.end());
+			_capacity = 0;
+			assign(c.begin(),c.end());
 			return *this;
 		}
 
@@ -313,11 +307,7 @@ namespace ft{
 
 		iterator erase (iterator position){
             iterator ret = position;
-			_Allocator.destroy(&(*position));
-            for(; position != end() - 1 ; position++)
-				_Allocator.construct(&(*position), *(position + 1));
-			_Allocator.destroy(&(*position));
-            _size--;
+			erase( position, position + 1);
             return (ret);
         }
 
