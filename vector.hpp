@@ -228,7 +228,7 @@ namespace ft{
 		template <class Iter>
 		vector (Iter first, Iter last, const allocator_type& alloc = allocator_type(),
 		typename ft::enable_if<!ft::is_integral<Iter>::value, Iter>::type* = NULL)
-		:_Allocator(alloc) , _Data(0) , _capacity(0)
+		:_Allocator(alloc) , _Data(0) , _size(0) ,_capacity(0)
 		{
 			assign(first,last);
 		}
@@ -241,7 +241,6 @@ namespace ft{
 
 		vector& operator=(const vector& c)
 		{
-			_capacity = 0;
 			assign(c.begin(),c.end());
 			return *this;
 		}
@@ -280,11 +279,11 @@ namespace ft{
 		}
 		void clear()
 		{
-			_size = 0;
 			if(!_capacity || !_size)
 				return;
-			for(iterator i = begin(); i != end(); i++)
-				_Allocator.destroy(&(*_Data));	
+			for(size_type i = 0; i < _size; i++)
+				_Allocator.destroy(_Data + i);	
+			_size = 0;
 		}
 
 		void reserve( size_type new_cap )
