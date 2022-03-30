@@ -5,6 +5,7 @@
 #include <vector>
 #include <iterator>
 #include <iostream>
+#include "avl_tree.hpp"
 
 // template<class Iter>
 // class iteratoratoratorator
@@ -15,7 +16,7 @@
 
 // };
 
-using namespace std;
+// using namespace std;
 
  
 // void print_container(vector<int>& vec) 
@@ -74,25 +75,16 @@ using namespace std;
 
 int main ()
 {
-  vector<int> first;
+  avl_node<int> t(5);
+  t.insert_value(2);
+  t.insert_value(12);
+  t.insert_value(10);
+  t.insert_value(20);
 
-  int myints[] = {1776,7,4};
-  first.assign (myints,myints+3);  
-
-  vector<int>::reverse_iterator rit = vector<int>::reverse_iterator(first.begin());
-  cout << *(rit.base()) << endl;
-
-
-//   it=first.begin()+1;
-
-//   second.assign (it,first.end()-1); // the 5 central values of first
-
-//   int myints[] = {1776,7,4};
-//   third.assign (myints,myints+3);   // assigning from array.
-
-//     print_container(first);
-//     first.assign (20, 5);
-//     print_container(first); 
+  t.print_tree();
+  t.rotate_left();
+  t.rotate_right();
+  t.print_tree();
 
   return 0;
 }

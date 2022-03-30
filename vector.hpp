@@ -245,7 +245,6 @@ namespace ft{
 			return *this;
 		}
 
-
 		reverse_iterator rbegin(void){ return reverse_iterator(end());}
 		const_reverse_iterator rbegin(void) const{ return const_reverse_iterator(end());}
 		reverse_iterator rend(void){ return reverse_iterator(begin());}
