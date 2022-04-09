@@ -6,6 +6,8 @@
 #include <iterator>
 #include <iostream>
 #include "avl_tree.hpp"
+#include "utils.hpp"
+
 
 // template<class Iter>
 // class iteratoratoratorator
@@ -72,19 +74,50 @@
 // vector assign
 // #include <iostream>
 // #include <vector>
+template <typename T>
+void   print(avl_node<T> *root, int space) {
+            if (root == NULL)
+                return;
+            space += 8;
+            print(root->_right, space);
+            std::cout << std::endl;
+            for (int i = 10; i < space; i++)
+                std::cout << " ";
+            std::cout << root->_value.first << std::endl;
+            print(root->_left, space);
+}
 
 int main ()
 {
-  avl_node<int> t(5);
-  t.insert_value(2);
-  t.insert_value(12);
-  t.insert_value(10);
-  t.insert_value(20);
 
-  t.print_tree();
-  t.rotate_left();
-  t.rotate_right();
-  t.print_tree();
+  ft::pair<int, int> a = ft::make_pair(50,21);
+  ft::pair<int, int> b = ft::make_pair(25,19);
+  ft::pair<int, int> c = ft::make_pair(35,22);
+  // ft::pair<int, int> d = ft::make_pair(57,23);
+  // ft::pair<int, int> e = ft::make_pair(16,18);
+  // ft::pair<int, int> f = ft::make_pair(17,18);
+  // ft::pair<int, int> g = ft::make_pair(10,18);
+  // ft::pair<int, int> h = ft::make_pair(11,18);
+  // ft::pair<int, int> i = ft::make_pair(9,18);
+  // ft::pair<int, int> j = ft::make_pair(8,18);
+  // ft::pair<int, int> k = ft::make_pair(7,18);
+
+
+  avl_tree<ft::pair<int, int> > t(a);
+  t.insert_value(t._root,b);
+  t.insert_value(t._root,c);
+  // t.insert_value(t._root,d);
+  // t.insert_value(t._root,e);
+  // t.insert_value(t._root,f);
+  // t.insert_value(t._root,g);
+  // t.insert_value(t._root,h);
+  // t.insert_value(t._root,i);
+  // t.insert_value(t._root,j);
+  // t.insert_value(t._root,k);
+
+  print(t._root,4);
+  // t.rotate_left();
+  // t.rotate_right();
 
   return 0;
 }
