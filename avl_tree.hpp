@@ -20,11 +20,9 @@ class avl_tree
     public:
         typedef T                   value_type;
         typedef avl_node<T>         node;
-        avl_tree():_root(){}
-        avl_tree(value_type c)
+        avl_tree()
         {
-            _root = new node(c , NULL);
-
+            _root = nullptr;
         }
         ~avl_tree(){}
         avl_tree(const avl_tree& c){*this = c;}
@@ -34,9 +32,14 @@ class avl_tree
                 this->_root = c._root;
             return *this;
         }
-
+ 
         void insert_value(node *n,const value_type &c)
         {
+            if(!_root)
+            {
+                _root = new node(c, NULL);
+                return;
+            }
             if(c.first == n->_value.first)
                 return;
             if(c.first > n->_value.first)
@@ -54,6 +57,51 @@ class avl_tree
                     n->_left = new node(c, n);
             }
             balance_node(n);         
+        }
+
+        template <typename K>
+        bool contains(K key)
+        {
+            node *tmp = _root;
+            while(tmp)
+            {
+                if(key == tmp->_value.first)
+                    return true;
+                if(key < tmp->_value.first)
+                    tmp = tmp->_left;
+                else if(key > tmp->_value.first)
+                    tmp = tmp->_right;
+            }
+            return false;
+        }
+        template <typename K>
+        void delete_value(node *n,const K &key)
+        {
+            node *tmp = _root;
+            if(!tmp || !contains(key))
+                return;
+            // in case there is no elements but the root
+            if(_root->_value.first == key && !_root->_left && !_root->_right)
+            {
+                delete _root;
+                _root = NULL;
+                return;
+            }
+            while (tmp)
+            {
+                if(key > tmp->_value.first)
+                    tmp = tmp->_right;
+                else if(key < tmp->_value.first)
+                    tmp = tmp->_left;
+                else
+                {
+                    if(tmp->_left)
+                        delete_left(tmp);
+                    else
+                        delete_right(tmp);
+                    return;
+                }
+            }
         }
 
         void rotate_left(node *n)
@@ -131,8 +179,66 @@ class avl_tree
                 return (Height(n->_left) - Height(n->_right));
             return (0);
         }
+        node *_root;   
+    private:
 
-        node *_root;     
+
+            void balance_tree(node *n)
+            {
+                while(n)
+                {
+                    balance_node(n);
+                    n = n->_parent;
+                }
+            }
+            void delete_left(node *tmp)
+            {
+                node *to_replace = tmp->_left;
+                while(to_replace->_right)
+                    to_replace = to_replace->_right;
+                tmp->_value = to_replace->_value;
+                if(to_replace->_left)
+                {
+                    to_replace->_value = to_replace->_left->_value;
+                    delete to_replace->_left;
+                    to_replace->_left = nullptr;
+                    balance_tree(to_replace);
+                }
+                else
+                {
+                    if(to_replace->_parent->_left == to_replace)
+                        to_replace->_parent->_left = nullptr;
+                    else if(to_replace->_parent->_right == to_replace)
+                        to_replace->_parent->_right = nullptr;
+                    balance_tree(to_replace->_parent);
+                    delete to_replace;
+                }
+            }
+            void delete_right(node *tmp)
+            {
+                node *to_replace = tmp;
+                if(tmp->_right)
+                    to_replace = tmp->_right;
+                while(to_replace->_left)
+                    to_replace = to_replace->_left;
+                tmp->_value = to_replace->_value;
+                if(to_replace->_right)
+                {
+                    to_replace->_value = to_replace->_right->_value;
+                    delete to_replace->_right;
+                    to_replace->_right = nullptr;
+                    balance_tree(to_replace);
+                }
+                else
+                {
+                    if(to_replace->_parent->_left == to_replace)
+                        to_replace->_parent->_left = nullptr;
+                    else if(to_replace->_parent->_right == to_replace)
+                        to_replace->_parent->_right = nullptr;
+                    balance_tree(to_replace->_parent);
+                    delete to_replace;
+                }
+            }       
 };
 
 // template <typename T>
