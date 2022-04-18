@@ -99,26 +99,28 @@ namespace ft
 	{
 		typedef	T1	first_type;
 		typedef	T2	second_type;
-		first_type	first;
-		second_type	second;
 
 		pair():first(),second(){}
 		pair( const T1& x, const T2& y ): first(x),second(y){}
 		template< class U1, class U2 >
 		pair( const pair<T1, T2>& p ): first(p.first),second(p.second){}
-		pair( const pair& p )
+		pair( const pair& p ): first(p.first),second(p.second)
+		{}
+		operator pair<const T1, T2>() const
 		{
-			*this = p;
+				return pair<const T1, T2>(first, second);
 		}
-		pair& operator=( const pair& other )
+		pair& operator= (const pair& p)
 		{
-			if(this != &other)
+			if (this != &p)
 			{
-				this->first = other.first;
-				this->second = other.second;
+				this->first = p.first;
+				this->second = p.second;
 			}
 			return *this;
 		}
+		first_type	first;
+		second_type	second;
 	};
 	template< class T1, class T2 >
 	ft::pair<T1,T2> make_pair( T1 t, T2 u )

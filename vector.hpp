@@ -8,9 +8,6 @@
 
 namespace ft{
 
-
-
-
 	// random access iterator
 	template<typename T>
 	class vectorIter

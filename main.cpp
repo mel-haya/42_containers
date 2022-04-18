@@ -7,6 +7,8 @@
 #include <iostream>
 #include "avl_tree.hpp"
 #include "utils.hpp"
+#include "map.hpp"
+#include <map>
 
 
 // template<class Iter>
@@ -87,42 +89,63 @@ void   print(avl_node<T> *root, int space) {
             print(root->_left, space);
 }
 
-int main ()
-{
+// int main ()
+// {
 
-  ft::pair<int, int> a = ft::make_pair(50,21);
-  ft::pair<int, int> b = ft::make_pair(25,19);
-  ft::pair<int, int> c = ft::make_pair(35,22);
-  ft::pair<int, int> d = ft::make_pair(57,23);
-  ft::pair<int, int> e = ft::make_pair(16,18);
-  ft::pair<int, int> f = ft::make_pair(17,18);
-  ft::pair<int, int> g = ft::make_pair(10,18);
-  ft::pair<int, int> h = ft::make_pair(11,18);
-  ft::pair<int, int> i = ft::make_pair(9,18);
-  ft::pair<int, int> j = ft::make_pair(8,18);
-  ft::pair<int, int> k = ft::make_pair(7,18);
+//   ft::pair<int, int> a = ft::make_pair(50,21);
+//   ft::pair<int, int> b = ft::make_pair(25,19);
+//   ft::pair<int, int> c = ft::make_pair(35,22);
+//   ft::pair<int, int> d = ft::make_pair(57,23);
+//   ft::pair<int, int> e = ft::make_pair(16,18);
+//   ft::pair<int, int> f = ft::make_pair(17,18);
+//   ft::pair<int, int> g = ft::make_pair(10,18);
+//   ft::pair<int, int> h = ft::make_pair(11,18);
+//   ft::pair<int, int> i = ft::make_pair(9,18);
+//   ft::pair<int, int> j = ft::make_pair(8,18);
+//   ft::pair<int, int> k = ft::make_pair(7,18);
 
 
 
-  avl_tree<ft::pair<int, int> > t;
-  t.insert_value(t._root,a);
-  t.insert_value(t._root,b);
-  t.insert_value(t._root,c);
-  t.insert_value(t._root,d);
-  t.insert_value(t._root,e);
-  t.insert_value(t._root,f);
-  t.insert_value(t._root,g);
-  t.insert_value(t._root,h);
-  t.insert_value(t._root,i);
-  t.insert_value(t._root,j);
-  t.insert_value(t._root,k);
-  t.delete_value(t._root,11);
-  t.delete_value(t._root,9);
-  t.delete_value(t._root,7);
+//   avl_tree<ft::pair<int, int> > t;
+//   t.insert_value(t._root,a);
+//   t.insert_value(t._root,b);
+//   t.insert_value(t._root,c);
+//   t.insert_value(t._root,d);
+//   t.insert_value(t._root,e);
+//   t.insert_value(t._root,f);
+//   t.insert_value(t._root,g);
+//   t.insert_value(t._root,h);
+//   t.insert_value(t._root,i);
+//   t.insert_value(t._root,j);
+//   t.insert_value(t._root,k);
+//   t.delete_value(7);
+//   t.delete_value(10);
+//   t.delete_value(8);
 
-  print(t._root,8);
-  // t.rotate_left();
-  // t.rotate_right();
+//   print(t._root,4);
+//   // t.rotate_left();
+//   // t.rotate_right();
 
-  return 0;
+//   return 0;
+// }
+
+
+int main (){
+
+    ft::pair<const char,int> a = ft::pair<const char,int>('r',5);
+    ft::pair<const char,int> b = ft::pair<const char,int>('a',10);
+    ft::map<char,int> first;
+    first.insert(a);
+    first.insert(b);
+    ft::map<char,int>::iterator it = first.begin();
+
+    std::cout << it->first << std::endl;
+    //first.print();
+    // ft::map<char,int>::const_iterator it = first.begin();
+    // std::cout << it->first << std::endl;
+    //first.insert(d);
+    //initializing
+    
+    
+    return 0;
 }
