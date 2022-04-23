@@ -8,7 +8,6 @@ template <typename T>
 struct avl_node
 {
     typedef T                   value_type;
-    typedef Compare             key_compare;
     value_type _value;
     avl_node *_left;
     avl_node *_right;
@@ -38,11 +37,9 @@ class avl_tree
         typedef T                   value_type;
         typedef avl_node<T>         node;
         typedef std::allocator<node>   allocator_type;
+        typedef compare             key_compare;
         typedef typename allocator_type::template rebind<value_type>::other allocator_type2;
-        avl_tree():_root(nullptr), comp();
-        {
-            _root = nullptr;
-        }
+        avl_tree():_root(nullptr), _comp(){}
         ~avl_tree(){}
         avl_tree(const avl_tree& c){*this = c;}
         avl_tree& operator=(const avl_tree& c)
@@ -64,21 +61,21 @@ class avl_tree
                 return nullptr;
 			while(1)
 			{
-				if(n->_right && c.first > n->_value.first)
+				if(n->_right && _comp(n->_value.first, c.first))
 					n = n->_right;
-				else if(n->_left && c.first < n->_value.first)
+				else if(n->_left && _comp(c.first, n->_value.first))
 					n = n->_left;
 				else
 					break;
 			}
-			if(c.first > n->_value.first)
+			if(_comp(n->_value.first, c.first))
 			{
 				n->_right = new_node(c, n);
                 tmp = n->_right;
 				balance_tree(n);
 				return tmp;
 			}
-			else if(c.first < n->_value.first)
+			else if(_comp(c.first, n->_value.first))
 			{
 				n->_left = new_node(c, n);
                 tmp = n->_left;
@@ -101,9 +98,9 @@ class avl_tree
             {
                 if(key == tmp->_value.first)
                     return tmp;
-                if(key < tmp->_value.first)
+                if(_comp(key, tmp->_value.first))
                     tmp = tmp->_left;
-                else if(key > tmp->_value.first)
+                else if(_comp(tmp->_value.first, key))
                     tmp = tmp->_right;
             }
             return nullptr;
@@ -123,9 +120,9 @@ class avl_tree
             }
             while (tmp)
             {
-                if(key > tmp->_value.first)
+                if(_comp(tmp->_value.first, key))
                     tmp = tmp->_right;
-                else if(key < tmp->_value.first)
+                else if(_comp(key, tmp->_value.first)) 
                     tmp = tmp->_left;
                 else
                 {

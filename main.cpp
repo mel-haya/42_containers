@@ -150,7 +150,7 @@ int main (){
     v.push_back(f);
     // v.push_back(g);
     ft::map<char, int> m1(v.begin(), v.end());
-    m1.erase(m1.begin(), m1.find('d'));
+    //m1.erase(m1.begin(), m1.find('d'));
     //ft::map<char, int>::iterator it = m1.begin();
     // for(;it != m1.end(); it++)
     //     std::cout << it->first << std::endl;

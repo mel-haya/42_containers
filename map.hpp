@@ -139,8 +139,8 @@ namespace ft
 				{
 					friend class map;
 					typedef bool				result_type;
-					typedef first_argument_type value_type;
-					typedef second_argument_type value_type;
+					typedef value_type first_argument_type;
+					typedef value_type second_argument_type;
 					protected:
 						Compare comp;
 						value_compare (Compare c) : comp(c) {}
