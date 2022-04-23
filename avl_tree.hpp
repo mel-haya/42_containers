@@ -3,10 +3,12 @@
 #include <iostream>
 #include <memory>
 
+
 template <typename T>
 struct avl_node
 {
     typedef T                   value_type;
+    typedef Compare             key_compare;
     value_type _value;
     avl_node *_left;
     avl_node *_right;
@@ -26,10 +28,10 @@ struct avl_node
 		while(tmp->_right)
 			tmp = tmp->_right;
 		return (tmp);
-	}
+	}  
 };
 
-template <typename T>
+template <typename T, typename compare>
 class avl_tree
 {
     public:
@@ -37,7 +39,7 @@ class avl_tree
         typedef avl_node<T>         node;
         typedef std::allocator<node>   allocator_type;
         typedef typename allocator_type::template rebind<value_type>::other allocator_type2;
-        avl_tree()
+        avl_tree():_root(nullptr), comp();
         {
             _root = nullptr;
         }
@@ -52,6 +54,7 @@ class avl_tree
  
         node *insert_value(node *n,const value_type &c)
         {
+            node *tmp;
             if(!_root)
             {
                 _root = new_node(c, nullptr);
@@ -71,14 +74,16 @@ class avl_tree
 			if(c.first > n->_value.first)
 			{
 				n->_right = new_node(c, n);
+                tmp = n->_right;
 				balance_tree(n);
-				return n->_right;
+				return tmp;
 			}
 			else if(c.first < n->_value.first)
 			{
 				n->_left = new_node(c, n);
+                tmp = n->_left;
 				balance_tree(n);
-				return n->_left;
+				return tmp;
 			}
 			return nullptr;
         }
@@ -89,7 +94,7 @@ class avl_tree
         }
 
         template <typename K>
-        node *contains(K key)
+        node *contains(K key) const
         {
             node *tmp = _root;
             while(tmp)
@@ -104,17 +109,17 @@ class avl_tree
             return nullptr;
         }
         template <typename K>
-        void delete_value(const K &key)
+        int delete_value(const K &key)
         {
             node *tmp = _root;
             if(!tmp || !contains(key))
-                return;
+                return 0;
             // in case there is no elements but the root
             if(_root->_value.first == key && !_root->_left && !_root->_right)
             {
                 _alloc.deallocate(_root, 1) ;
                 _root = NULL;
-                return;
+                return 1;
             }
             while (tmp)
             {
@@ -128,17 +133,20 @@ class avl_tree
                         delete_left(tmp);
                     else
                         delete_right(tmp);
-                    return;
+                    return 1;
                 }
             }
+            return 1;
         }
 
         void rotate_left(node *n)
         {
             node *new_root = n->_right;
             n->_right = new_root->_left;
+            if(n->_right)
+                n->_right->_parent = n;
             new_root->_left = n;
-            if(n == _root)
+            if(!n->_parent)
             {
                 _root = new_root;
                 _root->_parent = NULL;
@@ -158,8 +166,10 @@ class avl_tree
         {
             node *new_root = n->_left;
             n->_left = new_root->_right;
+            if(n->_left)
+                n->_left->_parent = n;
             new_root->_right = n;
-            if(n == _root)
+            if(!n->_parent)
             {
                 _root = new_root;
                 _root->_parent = NULL;
@@ -208,10 +218,28 @@ class avl_tree
                 return (Height(n->_left) - Height(n->_right));
             return (0);
         }
-        node *_root;
+
+        node *getRoot() const {return _root;}
+        void purge() {_root = nullptr;}
+
+        void DeleteAVL(node* n) 
+        {
+            if( n ) {
+                DeleteAVL( n->_left );
+                DeleteAVL( n->_right );
+                _alloc.deallocate(n, 1);
+            }
+        }
+
+        size_t max_size() const
+        {
+            return _alloc.max_size();
+        }
     private:
+            node *_root;
             allocator_type _alloc;
-            allocator_type2	allocator2; 
+            allocator_type2	allocator2;
+            key_compare _comp;
             node *new_node(value_type c, node *parent)
             {
                 node *ret = _alloc.allocate(1);
@@ -235,10 +263,12 @@ class avl_tree
                 node *to_replace = tmp->_left;
                 while(to_replace->_right)
                     to_replace = to_replace->_right;
-                tmp->_value = to_replace->_value;
+                //tmp->_value = to_replace->_value;
+                allocator2.construct(&tmp->_value, to_replace->_value);
                 if(to_replace->_left)
                 {
-                    to_replace->_value = to_replace->_left->_value;
+                    //to_replace->_value = to_replace->_left->_value;
+                    allocator2.construct(&to_replace->_value, to_replace->_left->_value);
                     _alloc.deallocate (to_replace->_left, 1);
                     to_replace->_left = nullptr;
                     balance_tree(to_replace);
@@ -260,10 +290,12 @@ class avl_tree
                     to_replace = tmp->_right;
                 while(to_replace->_left)
                     to_replace = to_replace->_left;
-                tmp->_value = to_replace->_value;
+                //tmp->_value = to_replace->_value;
+                allocator2.construct(&tmp->_value, to_replace->_value);
                 if(to_replace->_right)
                 {
-                    to_replace->_value = to_replace->_right->_value;
+                    //to_replace->_value = to_replace->_right->_value;
+                    allocator2.construct(&to_replace->_value, to_replace->_right->_value);
                     _alloc.deallocate (to_replace->_right, 1);
                     to_replace->_right = nullptr;
                     balance_tree(to_replace);

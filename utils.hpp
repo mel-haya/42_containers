@@ -110,6 +110,7 @@ namespace ft
 		{
 				return pair<const T1, T2>(first, second);
 		}
+
 		pair& operator= (const pair& p)
 		{
 			if (this != &p)

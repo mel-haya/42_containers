@@ -1,3 +1,6 @@
+#ifndef ITER_HPP
+#define ITER_HPP
+
 #include <iostream>
 
 
@@ -41,3 +44,5 @@ struct iterator_traits<const T*>
     typedef const T*                    pointer;
     typedef const T&                    reference;
 };
+
+#endif

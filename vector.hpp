@@ -342,8 +342,8 @@ namespace ft{
 		{
 			if(!count)
 				return;
-			if(pos > end())
-				std::cout << *pos;
+			// if(pos > end())
+			// 	std::cout << *pos;
 			difference_type dif = std::distance(begin(), pos);
 			if (_size + count > _capacity)
 					reserve((_capacity * 2 > _capacity + count) ? _capacity * 2 : _capacity + count);
