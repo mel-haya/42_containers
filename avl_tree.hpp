@@ -34,11 +34,12 @@ template <typename T, typename compare>
 class avl_tree
 {
     public:
-        typedef T                   value_type;
-        typedef avl_node<T>         node;
-        typedef std::allocator<node>   allocator_type;
-        typedef compare             key_compare;
+        typedef T                   	value_type;
+        typedef avl_node<T>         	node;
+        typedef std::allocator<node>	allocator_type;
+        typedef compare             	key_compare;
         typedef typename allocator_type::template rebind<value_type>::other allocator_type2;
+        typedef typename value_type::first_type	key_type;
         avl_tree():_root(nullptr), _comp(){}
         ~avl_tree(){}
         avl_tree(const avl_tree& c){*this = c;}
@@ -232,81 +233,92 @@ class avl_tree
         {
             return _alloc.max_size();
         }
-    private:
-            node *_root;
-            allocator_type _alloc;
-            allocator_type2	allocator2;
-            key_compare _comp;
-            node *new_node(value_type c, node *parent)
-            {
-                node *ret = _alloc.allocate(1);
-                allocator2.construct(&ret->_value, c);
-                ret->_parent = parent;
-                ret->_left = nullptr;
-                ret->_right = nullptr;
-                return ret;
-            }
 
-            void balance_tree(node *n)
+		node *findSuccesser(node *_root, key_type k)
+		{
+			while(k < ret->_value.first)
+			{
+				ret = ret->_right;	
+			}
+
+			return ret;
+		}
+
+    private:
+        node *_root;
+        allocator_type _alloc;
+        allocator_type2	allocator2;
+        key_compare _comp;
+        node *new_node(value_type c, node *parent)
+        {
+            node *ret = _alloc.allocate(1);
+            allocator2.construct(&ret->_value, c);
+            ret->_parent = parent;
+            ret->_left = nullptr;
+            ret->_right = nullptr;
+            return ret;
+        }
+		
+        void balance_tree(node *n)
+        {
+            while(n)
             {
-                while(n)
-                {
-                    balance_node(n);
-                    n = n->_parent;
-                }
+                balance_node(n);
+                n = n->_parent;
             }
-            void delete_left(node *tmp)
+        }
+        void delete_left(node *tmp)
+        {
+            node *to_replace = tmp->_left;
+            while(to_replace->_right)
+                to_replace = to_replace->_right;
+            //tmp->_value = to_replace->_value;
+            allocator2.construct(&tmp->_value, to_replace->_value);
+            if(to_replace->_left)
             {
-                node *to_replace = tmp->_left;
-                while(to_replace->_right)
-                    to_replace = to_replace->_right;
-                //tmp->_value = to_replace->_value;
-                allocator2.construct(&tmp->_value, to_replace->_value);
-                if(to_replace->_left)
-                {
-                    //to_replace->_value = to_replace->_left->_value;
-                    allocator2.construct(&to_replace->_value, to_replace->_left->_value);
-                    _alloc.deallocate (to_replace->_left, 1);
-                    to_replace->_left = nullptr;
-                    balance_tree(to_replace);
-                }
-                else
-                {
-                    if(to_replace->_parent->_left == to_replace)
-                        to_replace->_parent->_left = nullptr;
-                    else if(to_replace->_parent->_right == to_replace)
-                        to_replace->_parent->_right = nullptr;
-                    balance_tree(to_replace->_parent);
-                    _alloc.deallocate (to_replace, 1);
-                }
+                //to_replace->_value = to_replace->_left->_value;
+                allocator2.construct(&to_replace->_value, to_replace->_left->_value);
+                _alloc.deallocate (to_replace->_left, 1);
+                to_replace->_left = nullptr;
+                balance_tree(to_replace);
             }
-            void delete_right(node *tmp)
+            else
             {
-                node *to_replace = tmp;
-                if(tmp->_right)
-                    to_replace = tmp->_right;
-                while(to_replace->_left)
-                    to_replace = to_replace->_left;
-                //tmp->_value = to_replace->_value;
-                allocator2.construct(&tmp->_value, to_replace->_value);
-                if(to_replace->_right)
-                {
-                    //to_replace->_value = to_replace->_right->_value;
-                    allocator2.construct(&to_replace->_value, to_replace->_right->_value);
-                    _alloc.deallocate (to_replace->_right, 1);
-                    to_replace->_right = nullptr;
-                    balance_tree(to_replace);
-                }
-                else
-                {
-                    if(to_replace->_parent->_left == to_replace)
-                        to_replace->_parent->_left = nullptr;
-                    else if(to_replace->_parent->_right == to_replace)
-                        to_replace->_parent->_right = nullptr;
-                    balance_tree(to_replace->_parent);
-                    _alloc.deallocate (to_replace, 1);
-                }
-            }       
+                if(to_replace->_parent->_left == to_replace)
+                    to_replace->_parent->_left = nullptr;
+                else if(to_replace->_parent->_right == to_replace)
+                    to_replace->_parent->_right = nullptr;
+                balance_tree(to_replace->_parent);
+                _alloc.deallocate (to_replace, 1);
+            }
+        }
+        void delete_right(node *tmp)
+        {
+            node *to_replace = tmp;
+            if(tmp->_right)
+                to_replace = tmp->_right;
+            while(to_replace->_left)
+                to_replace = to_replace->_left;
+            //tmp->_value = to_replace->_value;
+            allocator2.construct(&tmp->_value, to_replace->_value);
+            if(to_replace->_right)
+            {
+                //to_replace->_value = to_replace->_right->_value;
+                allocator2.construct(&to_replace->_value, to_replace->_right->_value);
+                _alloc.deallocate (to_replace->_right, 1);
+                to_replace->_right = nullptr;
+                balance_tree(to_replace);
+            }
+            else
+            {
+                if(to_replace->_parent->_left == to_replace)
+                    to_replace->_parent->_left = nullptr;
+                else if(to_replace->_parent->_right == to_replace)
+                    to_replace->_parent->_right = nullptr;
+                balance_tree(to_replace->_parent);
+                _alloc.deallocate (to_replace, 1);
+            }
+        }
 };
 
 // template <typename T>

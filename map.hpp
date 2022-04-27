@@ -130,8 +130,8 @@ namespace ft
 				typedef const value_type*	const_pointer;
 				typedef mapIter<value_type> iterator;
 				typedef mapIter<const value_type> const_iterator;
-				// typedef reverse_iterator<const_iterator> const_reverse_iterator;
-				// typedef reverse_iterator<iterator>		reverse_iterator;
+				typedef reverse_iterator<const_iterator> const_reverse_iterator;
+				typedef reverse_iterator<iterator>		reverse_iterator;
 				typedef ptrdiff_t			difference_type;
 				typedef size_t				size_type;
 
@@ -297,11 +297,34 @@ namespace ft
 				iterator end() { return iterator(_root.getRoot(), nullptr);}
 
 				const_iterator end() const { return iterator(_root.getRoot(), nullptr);}
-
+				reverse_iterator rbegin() { return reverse_iterator(end()); }
+				const_reverse_iterator rbegin() const{return const_reverse_iterator(end());}
+				reverse_iterator	rend(void){ return reverse_iterator(begin());}
+				const_reverse_iterator	rend(void) const{ return const_reverse_iterator(begin());}
+				key_compare key_comp() const{ return _comp;}
 				void print()
 				{
 					print(_root.getRoot(),8);
 				}
+
+				iterator lower_bound( const Key& key )
+				{
+					return iterator(_root.getRoot(), _root.findSuccesser(key));
+				}
+
+				const_iterator lower_bound( const Key& key ) const
+				{
+					iterator it = begin();
+					while(_comp(key, it->first))
+						it++;
+					return it;
+				}
+
+				// iterator upper_bound( const Key& key )
+				// {
+				// 	iterator it = lower_bound(key);
+				// 	if (_root(conta))
+				// }
 
 				
 

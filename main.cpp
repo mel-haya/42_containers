@@ -129,17 +129,17 @@ void   print(avl_node<T> *root, int space) {
 
 //   return 0;
 // }
-typedef std::pair<const char,int> value_type;
+typedef std::pair<const int,int> value_type;
 
 int main (){
 
-    std::pair<const char,int> a = std::pair<const char,int>('c',5);
-    std::pair<const char,int> b = std::pair<const char,int>('b',10);
-    std::pair<const char,int> c = std::pair<const char,int>('a',92);
-    std::pair<const char,int> d = std::pair<const char,int>('d',10);
-    std::pair<const char,int> e = std::pair<const char,int>('e',90);
-    std::pair<const char,int> f = std::pair<const char,int>('m',33);
-    std::pair<const char,int> g = std::pair<const char,int>('z',33);
+    value_type a = value_type(10,5);
+    value_type b = value_type(20,10);
+    value_type c = value_type(30,92);
+    value_type d = value_type(40,10);
+    value_type e = value_type(50,90);
+    value_type f = value_type(60,33);
+    value_type g = value_type(70,33);
     std::vector<value_type> v;
 
     v.push_back(a);
@@ -148,9 +148,15 @@ int main (){
     v.push_back(d);
     v.push_back(e);
     v.push_back(f);
-    // v.push_back(g);
-    ft::map<char, int> m1(v.begin(), v.end());
-    //m1.erase(m1.begin(), m1.find('d'));
+    v.push_back(g);
+    ft::map<int, int> m1(v.begin(), v.end());
+    //m1.erase('e');
+    //ft::map<int, int>::iterator it = m1.begin();
+    //std::cout << it->first << std::endl;
+
+    std::cout << m1.lower_bound(19)->first << std::endl;
+    m1.print();
+    
     //ft::map<char, int>::iterator it = m1.begin();
     // for(;it != m1.end(); it++)
     //     std::cout << it->first << std::endl;
@@ -166,8 +172,8 @@ int main (){
     // for(int i = 0; i < 3; i++)
     //     it++;
     // m1.erase(m1.begin(), it);
-    m1.print();
-    std::cout << m1.size() << std::endl;
+    //m1.print();
+    //std::cout << m1.size() << std::endl;
 
     //it++;
     //const ft::map<char, int> m2(m1);
