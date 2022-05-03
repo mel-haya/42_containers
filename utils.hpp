@@ -84,14 +84,15 @@ namespace ft
 	}
 
 	template<class It1, class It2>
-	bool equal(It1 first1, It1 last1, It2 first2, It2 last2)
+	bool equal(It1 first1, It1 last1, It2 first2)
 	{
-		for ( ; (first1 != last1) && (first2 != last2); ++first1) {
-			if (*first1 != *first2)
-				return false;
-			++first2;
-		}
-		return (first1 == last1) && (first2 == last2);
+		while (first1 != last1){
+				if (*first1 != *first2)
+					return false;
+				++first1;
+				++first2;
+			}
+		return true;
 	}
 
 	template<class T1,class T2>

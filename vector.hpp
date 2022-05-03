@@ -456,7 +456,7 @@ namespace ft{
 	};
 
 	template< class T, typename _Alloc>
-	bool operator==( const vector<T,_Alloc>& lhs, const vector<T,_Alloc>& rhs ){ return ft::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()); }
+	bool operator==( const vector<T,_Alloc>& lhs, const vector<T,_Alloc>& rhs ){ return (lhs.size() == rhs.size()) ? ft::equal(lhs.begin(), lhs.end(), rhs.begin()) : false; }
 	template< class T, typename _Alloc>
 	bool operator!=( const vector<T,_Alloc>& lhs,const vector<T,_Alloc>& rhs ) {return (!(lhs == rhs));}
 	template< class T, typename _Alloc>
