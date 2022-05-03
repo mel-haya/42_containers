@@ -109,7 +109,7 @@ namespace ft{
             typedef typename iterator_type::pointer     		pointer;
             typedef typename iterator_type::reference   		reference;
 
-			reverse_iterator(): _it(nullptr) {}
+			reverse_iterator(): _it() {}
 			~reverse_iterator(){}
 			reverse_iterator( const reverse_iterator &rhs ): _it(rhs._it) {};
 			reverse_iterator(iterator_type _base) : _it(_base){}
@@ -227,6 +227,7 @@ namespace ft{
 		typename ft::enable_if<!ft::is_integral<Iter>::value, Iter>::type* = NULL)
 		:_Allocator(alloc) , _Data(0) , _size(0) ,_capacity(0)
 		{
+			_Allocator = alloc;
 			assign(first,last);
 		}
 		vector (const vector& x): _Allocator(allocator_type()), _Data(0), _size(0), _capacity(0) {*this = x;}
@@ -238,7 +239,11 @@ namespace ft{
 
 		vector& operator=(const vector& c)
 		{
-			assign(c.begin(),c.end());
+			if(this != &c)
+			{
+				//_Allocator = c._Allocator;
+				assign(c.begin(),c.end());
+			}
 			return *this;
 		}
 
@@ -340,17 +345,19 @@ namespace ft{
 
 		void insert( iterator pos, size_type count, const T& value )
 		{
-			if(!count)
-				return;
+			// if(!count)
+			// 	return;
 			// if(pos > end())
 			// 	std::cout << *pos;
 			difference_type dif = std::distance(begin(), pos);
 			if (_size + count > _capacity)
 					reserve((_capacity * 2 > _capacity + count) ? _capacity * 2 : _capacity + count);
 			iterator i = end() + count - 1;
-			for(; i != begin() + dif + count - 1  ; i--)
+			iterator end = begin() + dif + count - 1;
+			for(; i != end  ; i--)
 				_Allocator.construct(&(*i), *(i - count));
-			for(; i != begin() + dif - 1 ; i--)
+			end = begin() + dif - 1;
+			for(; i != end ; i--)
 				_Allocator.construct(&(*i), value);
 			_size+= count;
 		}
@@ -376,9 +383,11 @@ namespace ft{
 			if (_size + count > _capacity)
 					reserve((_capacity * 2 > _capacity + count) ? _capacity * 2 : _capacity + count);
 			iterator i = end() + count - 1;
-			for(; i != begin() + dif + count - 1  ; i--)
+			iterator end = begin() + dif + count - 1;
+			for(; i != end  ; i--)
 				_Allocator.construct(&(*i), *(i - count));
-			for(; i != begin() + dif - 1 ; i--)
+			end = begin() + dif - 1;
+			for(; i != end ; i--)
 			{
 				_Allocator.construct(&(*i), *(last - 1));
 				last--;

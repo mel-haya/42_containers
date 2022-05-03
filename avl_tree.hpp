@@ -2,20 +2,24 @@
 #define AVL_TREE_HPP
 #include <iostream>
 #include <memory>
-
+#include <algorithm>
 
 template <typename T>
 struct avl_node
 {
     typedef T                   value_type;
-    value_type _value;
-    avl_node *_left;
-    avl_node *_right;
-    avl_node *_parent;
+    value_type  _value;
+    avl_node    *_left;
+    avl_node    *_right;
+    avl_node    *_parent;
+    size_t      height;
+    long       bf;  
     avl_node():_value(), _left(nullptr), _right(nullptr), _parent(nullptr){}
     avl_node	*min()
 	{
         avl_node *tmp = this;
+        if(!tmp)
+            return nullptr;
 		while(tmp->_left)
 			tmp = tmp->_left;
 		return (tmp);
@@ -40,7 +44,7 @@ class avl_tree
         typedef compare             	key_compare;
         typedef typename allocator_type::template rebind<value_type>::other allocator_type2;
         typedef typename value_type::first_type	key_type;
-        avl_tree():_root(nullptr), _comp(){}
+        avl_tree():_root(nullptr), _comp(), len(0){}
         ~avl_tree(){}
         avl_tree(const avl_tree& c){*this = c;}
         avl_tree& operator=(const avl_tree& c)
@@ -58,8 +62,8 @@ class avl_tree
                 _root = new_node(c, nullptr);
                 return _root;
             }
-            if( n == _root && contains(c.first))
-                return nullptr;
+            // if( n == _root && contains(c.first))
+            //     return nullptr;
 			while(1)
 			{
 				if(n->_right && _comp(n->_value.first, c.first))
@@ -73,6 +77,7 @@ class avl_tree
 			{
 				n->_right = new_node(c, n);
                 tmp = n->_right;
+                updateHeight(n);
 				balance_tree(n);
 				return tmp;
 			}
@@ -80,6 +85,7 @@ class avl_tree
 			{
 				n->_left = new_node(c, n);
                 tmp = n->_left;
+                updateHeight(n->_left);
 				balance_tree(n);
 				return tmp;
 			}
@@ -88,6 +94,7 @@ class avl_tree
 
         node *insert_value(const value_type &c)
         {
+            len++;
             return insert_value(_root, c);
         }
 
@@ -110,6 +117,7 @@ class avl_tree
         int delete_value(const K &key)
         {
             node *tmp = _root;
+            len--;
             if(!tmp || !contains(key))
                 return 0;
             // in case there is no elements but the root
@@ -158,6 +166,8 @@ class avl_tree
                 new_root->_parent = n->_parent;
             }
             n->_parent = new_root;
+            updateHeight(new_root->_left);
+            //updateHeight(new_root);
         }
 
         void rotate_right(node *n)
@@ -181,40 +191,46 @@ class avl_tree
                 new_root->_parent = n->_parent;
             }
             n->_parent = new_root;
+            updateHeight(new_root->_right);
+            //updateHeight(new_root);
         }
 
         void balance_node(node *n)
         {
-            int balance = balance_factor(n);
-            if(balance > 1)
+            //int balance = balance_factor(n);
+            if(n->bf > 2)
             {
-                if( balance_factor(n->_left) < 0)
+                if( n->_left->bf < 1)
                     rotate_left(n->_left);
                 rotate_right(n);
             }
-            else if (balance < -1)
+            else if (n->bf < -2)
             {
-                if( balance_factor(n->_right) > 0)
+                if( n->_right->bf > 1)
                     rotate_right(n->_right);
                 rotate_left(n);
             }
         }
 
-        int Height(node *root) const {
-            int height = 0;
-            if( root ) {
-                int left  = Height(root->_left);
-                int right = Height(root->_right);
-                height = 1 + ((left > right) ? left : right) ;
-            }
-            return height;
+        int height(node *root) const {
+            if (root == NULL)
+                return 0;
+            return root->height;
         }
 
         int balance_factor(node *n)
         {
-            if(n)
-                return (Height(n->_left) - Height(n->_right));
-            return (0);
+            return (height(n->_left) - height(n->_right));
+        }
+
+        void updateHeight(node *n)
+        {
+            while(n)
+            {
+                n->height = 1 + std::max(height(n->_right), height(n->_left));
+                n->bf = height(n->_left) - height(n->_right);
+                n = n->_parent;
+            }
         }
 
         node *getRoot() const {return _root;}
@@ -223,6 +239,7 @@ class avl_tree
         void DeleteAVL(node* n) 
         {
             if( n ) {
+                len = 0;
                 DeleteAVL( n->_left );
                 DeleteAVL( n->_right );
                 _alloc.deallocate(n, 1);
@@ -234,21 +251,38 @@ class avl_tree
             return _alloc.max_size();
         }
 
-		node *findSuccesser(node *_root, key_type k)
+        size_t size() const
+        {
+            return len;
+        }
+
+		node *findSuccesser(node *root, key_type k) const
 		{
-			while(k < ret->_value.first)
-			{
-				ret = ret->_right;	
-			}
-
-			return ret;
+            node *successor = nullptr;
+            while(root)
+            {
+                if(_comp(k, root->_value.first))
+                {
+                    successor = root;
+                    root = root->_left;
+                }
+                else if(!_comp(k, root->_value.first))
+                    root = root->_right;
+            }
+            return successor;
 		}
-
+        void swap(avl_tree &other)
+        {
+            std::swap(_root, other._root);
+            std::swap(len, other.len);
+            
+        }
     private:
         node *_root;
         allocator_type _alloc;
         allocator_type2	allocator2;
         key_compare _comp;
+        size_t len;
         node *new_node(value_type c, node *parent)
         {
             node *ret = _alloc.allocate(1);
@@ -256,6 +290,8 @@ class avl_tree
             ret->_parent = parent;
             ret->_left = nullptr;
             ret->_right = nullptr;
+            ret->height = 0;
+            ret->bf = 1;
             return ret;
         }
 		
@@ -280,6 +316,7 @@ class avl_tree
                 allocator2.construct(&to_replace->_value, to_replace->_left->_value);
                 _alloc.deallocate (to_replace->_left, 1);
                 to_replace->_left = nullptr;
+                updateHeight(to_replace);
                 balance_tree(to_replace);
             }
             else
@@ -288,6 +325,7 @@ class avl_tree
                     to_replace->_parent->_left = nullptr;
                 else if(to_replace->_parent->_right == to_replace)
                     to_replace->_parent->_right = nullptr;
+                updateHeight(to_replace->_parent);
                 balance_tree(to_replace->_parent);
                 _alloc.deallocate (to_replace, 1);
             }
@@ -299,7 +337,7 @@ class avl_tree
                 to_replace = tmp->_right;
             while(to_replace->_left)
                 to_replace = to_replace->_left;
-            //tmp->_value = to_replace->_value;
+            updateHeight(to_replace);
             allocator2.construct(&tmp->_value, to_replace->_value);
             if(to_replace->_right)
             {
@@ -307,6 +345,7 @@ class avl_tree
                 allocator2.construct(&to_replace->_value, to_replace->_right->_value);
                 _alloc.deallocate (to_replace->_right, 1);
                 to_replace->_right = nullptr;
+                updateHeight(to_replace);
                 balance_tree(to_replace);
             }
             else
@@ -315,12 +354,18 @@ class avl_tree
                     to_replace->_parent->_left = nullptr;
                 else if(to_replace->_parent->_right == to_replace)
                     to_replace->_parent->_right = nullptr;
+                updateHeight(to_replace->_parent);
                 balance_tree(to_replace->_parent);
                 _alloc.deallocate (to_replace, 1);
             }
         }
 };
 
+template <typename T, typename compare>
+void swap(avl_tree<T, compare> &rhs, avl_tree<T, compare> &lhs)
+{
+    rhs.swap(lhs);
+}
 // template <typename T>
 // class avl_tree
 // {
